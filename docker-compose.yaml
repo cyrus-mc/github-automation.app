@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  # main IDE container
+  main: {}
+    # add required env vars
+    #environment:
+      #FOO: bar
+
+  # add additional services required

@@ -1,0 +1,70 @@
+{
+  "name": "ide",
+
+  "dockerComposeFile": [
+    "docker-compose.yaml",
+    "../docker-compose.yaml"
+  ],
+  "service": "main",
+  "workspaceFolder": "/workspace",
+
+  "mounts": [
+    "type=bind,source=/Users/${localEnv:USER}/.ssh/id_rsa,target=/home/vscode/.ssh/id_rsa,readonly",
+    "type=bind,source=/Users/${localEnv:USER}/.aws,target=/home/vscode/.aws",
+    "type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock"
+  ],
+
+  "containerUser": "vscode",
+  "containerEnv": {
+    "USERNAME": "${localEnv:USER}"
+  },
+  "remoteUser": "vscode",
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+
+        // https://code.visualstudio.com/docs/editor/intellisense#_customizing-intellisense
+        "editor.hover.above": false,
+
+        "files": {
+          "autoSave": "afterDelay",
+          "autoSaveDelay": 10000
+        },
+
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.profiles.linux": {
+          "zsh": {
+              "path": "/usr/bin/zsh"
+          }
+        },
+
+        "vim": {
+          "easymotion": false,
+          "incsearch": true,
+          "useSystemClipboard": true,
+          "useCtrlKeys": true,
+          "hlsearch": true,
+          "leader": "<space>"
+        }
+
+      },
+
+      "extensions.experimental.affinity": {
+        "vscodevim.vim": 1
+      },
+
+      "extensions": [
+        "kavod-io.vscode-jest-test-adapter",
+        "dbaeumer.vscode-eslint",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode.makefile-tools",
+        "HashiCorp.terraform",
+        "vscodevim.vim"
+      ]
+    }
+  },
+
+  "initializeCommand": "cat .devcontainer/env.config env.config > .devcontainer/.env",
+  "postCreateCommand": "make init"
+}
