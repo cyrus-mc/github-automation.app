@@ -26,10 +26,14 @@
 
         // https://code.visualstudio.com/docs/editor/intellisense#_customizing-intellisense
         "editor.hover.above": false,
+        "editor.inlayHints.enabled": "on",
+        "editor.guides.indentation": false,
 
         "files": {
           "autoSave": "afterDelay",
-          "autoSaveDelay": 10000
+          "autoSaveDelay": 10000,
+          "insertFinalNewline": true,
+          "trimTrailingWhitespace": true
         },
 
         "terminal.integrated.defaultProfile.linux": "zsh",
