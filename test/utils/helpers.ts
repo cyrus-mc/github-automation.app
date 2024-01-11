@@ -80,8 +80,8 @@ class OctokitApiMock {
     return this.nock
   }
 
-  public getRepoContent (repo: string, file: string, contents: string): OctokitApiMock {
-    const mock = this.nock.get(`/repos/${IDENTIFIERS.organizationName}/${repo}/contents/${file}`)
+  public getRepoContent (repo: string, file: string, ref: string, contents: string): OctokitApiMock {
+    const mock = this.nock.get(`/repos/${IDENTIFIERS.organizationName}/${repo}/contents/${file}?ref=${ref}`)
       .reply(200, {
         content: Buffer.from(contents).toString('base64'),
         encoding: 'base64',
@@ -103,6 +103,35 @@ class OctokitApiMock {
         },
         ...settings
       })
+
+    return new OctokitApiMock(mock)
+  }
+
+  public getRepoAllTopics (): OctokitApiMock {
+    const mock = this.nock.get(`/repos/${IDENTIFIERS.organizationName}/${IDENTIFIERS.repositoryName}/topics`)
+      .reply(200, {
+        names: ['topic1', 'topic2']
+      })
+
+    return new OctokitApiMock(mock)
+  }
+
+  public repoListTeams (): OctokitApiMock {
+    const mock = this.nock.get(`/repos/${IDENTIFIERS.organizationName}/${IDENTIFIERS.repositoryName}/teams`)
+      .reply(200, [
+        {
+          id: 1,
+          name: 'Platform Engineering',
+          slug: 'platform-engineering'
+        }
+      ])
+
+    return new OctokitApiMock(mock)
+  }
+
+  public teamsAddOrUpdateRepoPermissionsInOrg (team: string): OctokitApiMock {
+    const mock = this.nock.delete(`/orgs/${IDENTIFIERS.organizationName}/teams/${team}/repos/${IDENTIFIERS.organizationName}/${IDENTIFIERS.repositoryName}`)
+      .reply(204)
 
     return new OctokitApiMock(mock)
   }

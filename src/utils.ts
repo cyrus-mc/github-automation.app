@@ -1,5 +1,4 @@
 import yaml from 'js-yaml'
-import type { Config } from './types/config'
 import type { ProbotOctokit } from 'probot'
 
 /**
@@ -10,19 +9,20 @@ import type { ProbotOctokit } from 'probot'
  * @param { file } file - the name of the file to read
  * @param { ProbotOctokit } github - the GitHub API client
  *
- * @returns { Config } - configuration
+ * @returns { Record<string,any> } - contents of the file
  */
-export async function getConfiguration (owner: string, repo: string, file: string, github: InstanceType<typeof ProbotOctokit>): Promise<Config> {
+export async function getRepoContent (owner: string, repo: string, file: string, ref: string, github: InstanceType<typeof ProbotOctokit>): Promise<Record<string, any>> {
   const fileContent = await github.repos.getContent({
     owner,
     repo,
-    path: file
+    path: file,
+    ref
   })
 
-  let config: Config = {}
+  let content: Record<string, any> = {}
   if ('content' in fileContent.data) {
     const buff = Buffer.from(fileContent.data.content, 'base64') // encoding should be base64
-    config = yaml.load(buff.toString()) as Config
+    content = yaml.load(buff.toString()) as Record<string, any>
   }
-  return config
+  return content
 }
