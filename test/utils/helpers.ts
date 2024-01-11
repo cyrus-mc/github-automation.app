@@ -107,7 +107,7 @@ class OctokitApiMock {
     return new OctokitApiMock(mock)
   }
 
-  public getRepoAllTopics (): OctokitApiMock {
+  public reposGetAllTopics (): OctokitApiMock {
     const mock = this.nock.get(`/repos/${IDENTIFIERS.organizationName}/${IDENTIFIERS.repositoryName}/topics`)
       .reply(200, {
         names: ['topic1', 'topic2']
@@ -116,7 +116,7 @@ class OctokitApiMock {
     return new OctokitApiMock(mock)
   }
 
-  public repoListTeams (): OctokitApiMock {
+  public reposListTeams (): OctokitApiMock {
     const mock = this.nock.get(`/repos/${IDENTIFIERS.organizationName}/${IDENTIFIERS.repositoryName}/teams`)
       .reply(200, [
         {
@@ -129,8 +129,17 @@ class OctokitApiMock {
     return new OctokitApiMock(mock)
   }
 
-  public teamsAddOrUpdateRepoPermissionsInOrg (team: string): OctokitApiMock {
-    const mock = this.nock.delete(`/orgs/${IDENTIFIERS.organizationName}/teams/${team}/repos/${IDENTIFIERS.organizationName}/${IDENTIFIERS.repositoryName}`)
+  public teamsRemoveRepoInOrg (teamSlug: string): OctokitApiMock {
+    const mock = this.nock.delete(`/orgs/${IDENTIFIERS.organizationName}/teams/${teamSlug}/repos/${IDENTIFIERS.organizationName}/${IDENTIFIERS.repositoryName}`)
+      .reply(204)
+
+    return new OctokitApiMock(mock)
+  }
+
+  public teamsAddOrUpdateRepoPermissionsInOrg (teamSlug: string, permission: string): OctokitApiMock {
+    const mock = this.nock.put(`/orgs/${IDENTIFIERS.organizationName}/teams/${teamSlug}/repos/${IDENTIFIERS.organizationName}/${IDENTIFIERS.repositoryName}`, {
+      permission
+    })
       .reply(204)
 
     return new OctokitApiMock(mock)

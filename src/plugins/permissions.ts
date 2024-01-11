@@ -67,7 +67,6 @@ module.exports = class Permissions {
               permission: permission as RepositoryRoles
             })
           } catch (error) {
-            console.log(error)
             console.log(`Failed to add ${team} to ${this.owner}/${this.repo} with ${permission} permissions`)
           }
         }
