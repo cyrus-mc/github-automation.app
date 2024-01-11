@@ -1,11 +1,11 @@
 import { ProbotOctokit } from 'probot'
 import { mockGitHubApiRequests } from '../utils/helpers'
 import { Settings } from '../../src/settings'
-import type { Config } from '../../src/types/config'
+import type { RepositoryConfig } from '../../src/types/repository'
 
 describe('repository plugin', () => {
   const octokit = new ProbotOctokit()
-  const config: Config = {
+  const config: RepositoryConfig = {
     repository: {
       has_issues: true,
       has_projects: true,

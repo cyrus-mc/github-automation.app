@@ -9,12 +9,6 @@ export interface RepositoryAction {
 
 export type RepositoryPermissions = Record<string, RepositoryAction>
 
-// const hlPermissions: RepositoryPermissions = {
-//  topic1: {
-//    push: ['team1'],
-//    pull: ['team2']
-//  },
-//  topic2: {
-//    push: ['team1']
-//  }
-// }
+export interface PermissionsConfig {
+  permissions: RepositoryPermissions
+}

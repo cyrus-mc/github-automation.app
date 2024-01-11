@@ -3,7 +3,7 @@ import { Probot, ProbotOctokit } from 'probot'
 import fs from 'fs'
 import path from 'path'
 import myProbotApp from '../../src'
-import type { RepositorySettings } from '../../src/types/repository_settings'
+import type { RepositorySettings } from '../../src/types/repository'
 
 /**
  * Constants used in the fixtures

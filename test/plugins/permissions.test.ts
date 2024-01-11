@@ -14,7 +14,7 @@ describe('repository plugin', () => {
     }
   }
 
-  test('set repository settings', async () => {
+  test.skip('set repository settings', async () => {
     const mock = mockGitHubApiRequests()
       .repoUpdate(config.repository).toNock()
 

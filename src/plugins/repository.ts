@@ -1,6 +1,6 @@
 // import yaml from 'js-yaml'
 import type { ProbotOctokit } from 'probot'
-import type { RepositorySettings } from '../types/repository_settings'
+import type { RepositorySettings } from '../types/repository'
 import type { OctokitResponse } from '@octokit/types'
 
 /**

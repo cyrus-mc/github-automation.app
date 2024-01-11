@@ -1,11 +1,11 @@
-import type { Config } from '../src/types/config'
+import type { RepositoryConfig } from '../src/types/repository'
 import type { Context } from 'probot'
 import { ProbotOctokit } from 'probot'
 import { mockGitHubApiRequests } from './utils/helpers'
 import { getRepoContent } from '../src/utils'
 
 describe('utils', () => {
-  const config: Config = {
+  const config: RepositoryConfig = {
     repository: {
       has_issues: true,
       has_projects: true,
