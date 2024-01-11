@@ -1,7 +1,7 @@
 import nock from 'nock'
 import myProbotApp from '../src'
 import { Probot, ProbotOctokit } from 'probot'
-import type { Config } from '../src/types/config'
+import type { RepositoryConfig } from '../src/types/repository'
 import * as labelHandler from '../src/handlers/label'
 import * as utils from '../src/utils'
 // import * as repositorySettings from '../src/plugins/repository'
@@ -52,7 +52,7 @@ describe('My Probot app', () => {
       name: 'repository',
       payload: require('./fixtures/repository.created.json')
     }
-    const config: Config = {
+    const config: RepositoryConfig = {
       repository: {
         has_issues: true,
         has_projects: true,
@@ -69,7 +69,7 @@ describe('My Probot app', () => {
         merge_commit_message: 'PR_TITLE'
       }
     }
-    const spy = jest.spyOn(utils, 'getConfiguration')
+    const spy = jest.spyOn(utils, 'getRepoContent')
     spy.mockResolvedValue(Promise.resolve(config))
 
     // await probot.receive(event)

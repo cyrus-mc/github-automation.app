@@ -13,3 +13,19 @@ export interface RepositorySettings {
   merge_commit_title?: string
   merge_commit_message?: string
 }
+
+export type Branches = BranchSettings[]
+
+export interface BranchSettings {
+  name: string
+  protection: BranchProtectionRule
+}
+
+interface BranchProtectionRule {
+  required_pull_request_reviews: any
+}
+
+export interface RepositoryConfig {
+  repository?: RepositorySettings
+  branches?: Branches
+}

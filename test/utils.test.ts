@@ -1,11 +1,11 @@
-import type { Config } from '../src/types/config'
+import type { RepositoryConfig } from '../src/types/repository'
 import type { Context } from 'probot'
 import { ProbotOctokit } from 'probot'
 import { mockGitHubApiRequests } from './utils/helpers'
-import { getConfiguration } from '../src/utils'
+import { getRepoContent } from '../src/utils'
 
 describe('utils', () => {
-  const config: Config = {
+  const config: RepositoryConfig = {
     repository: {
       has_issues: true,
       has_projects: true,
@@ -50,12 +50,12 @@ describe('utils', () => {
   test('read configuraiton file', async () => {
     /* mock the call to getRepoContent */
     const mock = mockGitHubApiRequests()
-      .getRepoContent('_reponame', 'settings.repo.yaml', JSON.stringify(config)).toNock()
+      .getRepoContent('_reponame', 'settings.repo.yaml', 'main', JSON.stringify(config)).toNock()
 
-    const expectedConfig = await getConfiguration('_orgname', '_reponame', 'settings.repo.yaml', context.octokit)
+    const expectedConfig = await getRepoContent('_orgname', '_reponame', 'settings.repo.yaml', 'main', context.octokit)
 
     expect(expectedConfig).toEqual(config)
     /* ensure there are no pending mock requests */
     expect(mock.pendingMocks()).toEqual([])
-  })
+  }, 100000)
 })

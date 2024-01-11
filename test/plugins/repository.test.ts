@@ -1,11 +1,11 @@
 import { ProbotOctokit } from 'probot'
 import { mockGitHubApiRequests } from '../utils/helpers'
 import { Settings } from '../../src/settings'
-import type { Config } from '../../src/types/config'
+import type { RepositoryConfig } from '../../src/types/repository'
 
 describe('repository plugin', () => {
   const octokit = new ProbotOctokit()
-  const config: Config = {
+  const config: RepositoryConfig = {
     repository: {
       has_issues: true,
       has_projects: true,
@@ -31,7 +31,7 @@ describe('repository plugin', () => {
     expect(mock.pendingMocks()).toEqual([])
   })
 
-  test.skip('don not set squash_merge_commit_title or squash_merge_commit_message if allow_squash_merge is false', async () => {
+  test.skip('do not set squash_merge_commit_title or squash_merge_commit_message if allow_squash_merge is false', async () => {
     const mock = mockGitHubApiRequests()
       .repoUpdate(Object.assign({}, config, { allow_squash_merge: false })).toNock()
 

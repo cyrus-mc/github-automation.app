@@ -1,23 +1,26 @@
-import type { Config } from './types/config'
+// import type { Config } from './types/config'
 import type { ProbotOctokit } from 'probot'
 import type { OctokitResponse } from '@octokit/types'
 
 export class Settings {
-  config: Config
+  config: any
   repo: string
   owner: string
   github: InstanceType<typeof ProbotOctokit>
   plugins: Record<string, any>
 
-  constructor (owner: string, repo: string, config: Config, github: InstanceType<typeof ProbotOctokit>) {
+  constructor (owner: string, repo: string, config: any, github: InstanceType<typeof ProbotOctokit>) {
     this.repo = repo
     this.owner = owner
     this.github = github
     this.config = config
-    this.plugins = { repository: require('./plugins/repository') }
+    this.plugins = {
+      repository: require('./plugins/repository'),
+      permissions: require('./plugins/permissions')
+    }
   }
 
-  static async sync (owner: string, repo: string, config: Config, github: InstanceType<typeof ProbotOctokit>): Promise<any> {
+  static async sync (owner: string, repo: string, config: any, github: InstanceType<typeof ProbotOctokit>): Promise<any> {
     await new Settings(owner, repo, config, github).update()
   }
 

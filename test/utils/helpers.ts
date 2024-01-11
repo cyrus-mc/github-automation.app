@@ -3,7 +3,7 @@ import { Probot, ProbotOctokit } from 'probot'
 import fs from 'fs'
 import path from 'path'
 import myProbotApp from '../../src'
-import type { RepositorySettings } from '../../src/types/repository_settings'
+import type { RepositorySettings } from '../../src/types/repository'
 
 /**
  * Constants used in the fixtures
@@ -80,8 +80,8 @@ class OctokitApiMock {
     return this.nock
   }
 
-  public getRepoContent (repo: string, file: string, contents: string): OctokitApiMock {
-    const mock = this.nock.get(`/repos/${IDENTIFIERS.organizationName}/${repo}/contents/${file}`)
+  public getRepoContent (repo: string, file: string, ref: string, contents: string): OctokitApiMock {
+    const mock = this.nock.get(`/repos/${IDENTIFIERS.organizationName}/${repo}/contents/${file}?ref=${ref}`)
       .reply(200, {
         content: Buffer.from(contents).toString('base64'),
         encoding: 'base64',
@@ -103,6 +103,44 @@ class OctokitApiMock {
         },
         ...settings
       })
+
+    return new OctokitApiMock(mock)
+  }
+
+  public reposGetAllTopics (): OctokitApiMock {
+    const mock = this.nock.get(`/repos/${IDENTIFIERS.organizationName}/${IDENTIFIERS.repositoryName}/topics`)
+      .reply(200, {
+        names: ['topic1', 'topic2']
+      })
+
+    return new OctokitApiMock(mock)
+  }
+
+  public reposListTeams (): OctokitApiMock {
+    const mock = this.nock.get(`/repos/${IDENTIFIERS.organizationName}/${IDENTIFIERS.repositoryName}/teams`)
+      .reply(200, [
+        {
+          id: 1,
+          name: 'Platform Engineering',
+          slug: 'platform-engineering'
+        }
+      ])
+
+    return new OctokitApiMock(mock)
+  }
+
+  public teamsRemoveRepoInOrg (teamSlug: string): OctokitApiMock {
+    const mock = this.nock.delete(`/orgs/${IDENTIFIERS.organizationName}/teams/${teamSlug}/repos/${IDENTIFIERS.organizationName}/${IDENTIFIERS.repositoryName}`)
+      .reply(204)
+
+    return new OctokitApiMock(mock)
+  }
+
+  public teamsAddOrUpdateRepoPermissionsInOrg (teamSlug: string, permission: string): OctokitApiMock {
+    const mock = this.nock.put(`/orgs/${IDENTIFIERS.organizationName}/teams/${teamSlug}/repos/${IDENTIFIERS.organizationName}/${IDENTIFIERS.repositoryName}`, {
+      permission
+    })
+      .reply(204)
 
     return new OctokitApiMock(mock)
   }
