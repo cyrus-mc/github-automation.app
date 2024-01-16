@@ -20,9 +20,15 @@ export = (app: Probot) => {
   })
 
   app.on('repository.created', async (context: Context<'repository.created'>) => {
-    const config = await getRepoContent(context.payload.repository.owner.login,
+    let config = await getRepoContent(context.payload.repository.owner.login,
       controlRepository,
       settingsFile, 'main', context.octokit)
+
+    await Settings.sync(context.payload.repository.owner.login, context.payload.repository.name, config, context.octokit)
+
+    config = await getRepoContent(context.payload.repository.owner.login,
+      controlRepository,
+      'permissions.repo.yaml', 'main', context.octokit)
 
     await Settings.sync(context.payload.repository.owner.login, context.payload.repository.name, config, context.octokit)
   })

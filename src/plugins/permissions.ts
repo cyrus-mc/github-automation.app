@@ -34,12 +34,12 @@ module.exports = class Permissions {
     })
 
     /* check topics against configuration (intersection) */
-    const topicsToKeep = topics.filter(topic => currentRepoTopics.names.includes(topic))
+    let topicsToKeep = topics.filter(topic => currentRepoTopics.names.includes(topic))
     // don't assign default permissions
-    // if (currentRepoTopics.names.length === 0 || topicsToKeep.length === 0) {
-    //  /* use default permissions */
-    //  topicsToKeep = ['default']
-    // }
+    if (currentRepoTopics.names.length === 0 || topicsToKeep.length === 0) {
+      /* use default permissions */
+      topicsToKeep = ['default']
+    }
 
     /* clear all current repository team associations */
     const { data: currentAssignedTeams } = await this.github.repos.listTeams({
