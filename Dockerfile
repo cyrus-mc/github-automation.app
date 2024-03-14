@@ -60,6 +60,10 @@ RUN make build
 
 FROM node:20.10.0-bookworm
 
+LABEL com.dat.vendor HiddenLayer
+LABEL org.opencontainers.image.source https://github.com/hiddenlayer-engineering/github-automation-app
+LABEL org.opencontainers.image.description GitHub Automation App
+
 WORKDIR /src
 
 COPY --from=build /src/dist dist
