@@ -60,6 +60,7 @@
 
       "extensions": [
         "kavod-io.vscode-jest-test-adapter",
+        "hbenl.vscode-test-explorer",
         "dbaeumer.vscode-eslint",
         "ms-azuretools.vscode-docker",
         "ms-vscode.makefile-tools",

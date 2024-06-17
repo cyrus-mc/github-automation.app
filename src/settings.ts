@@ -16,7 +16,8 @@ export class Settings {
     this.config = config
     this.plugins = {
       repository: require('./plugins/repository'),
-      permissions: require('./plugins/permissions')
+      permissions: require('./plugins/permissions'),
+      teams: require('./plugins/teams')
     }
   }
 

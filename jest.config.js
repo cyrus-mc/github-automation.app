@@ -6,9 +6,5 @@ module.exports = {
   testRegex: '(/__tests__/.*|\\.(test|spec))\\.[tj]sx?$',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   testEnvironment: 'node',
-  coverageDirectory: './reports/coverage',
-  collectCoverage: true,
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}'
-  ]
+  coverageDirectory: './reports/coverage'
 }

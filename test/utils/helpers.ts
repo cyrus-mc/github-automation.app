@@ -144,4 +144,69 @@ class OctokitApiMock {
 
     return new OctokitApiMock(mock)
   }
+
+  public orgListTeams (teams: string[]): OctokitApiMock {
+    const response = teams.map(team => {
+      return {
+        id: 1,
+        name: team,
+        slug: team.toLocaleLowerCase().replace(/ /g, '-')
+      }
+    })
+    const mock = this.nock.get(`/orgs/${IDENTIFIERS.organizationName}/teams`)
+      .reply(200, response)
+
+    return new OctokitApiMock(mock)
+  }
+
+  public orgListTeamMembers (teamSlug: string, members: string[]): OctokitApiMock {
+    const response = members.map(member => {
+      return {
+        login: member,
+        id: 1
+      }
+    })
+    const mock = this.nock.get(`/orgs/${IDENTIFIERS.organizationName}/teams/${teamSlug}/members`)
+      .reply(200, response)
+
+    return new OctokitApiMock(mock)
+  }
+
+  public createTeam (teamName: string): OctokitApiMock {
+    const mock = this.nock.post(`/orgs/${IDENTIFIERS.organizationName}/teams`, {
+      name: teamName
+    })
+      .reply(201, {
+        id: 1,
+        name: teamName,
+        slug: teamName.toLocaleLowerCase().replace(/ /g, '-')
+      })
+
+    return new OctokitApiMock(mock)
+  }
+
+  public deleteTeam (teamName: string): OctokitApiMock {
+    const mock = this.nock.delete(`/orgs/${IDENTIFIERS.organizationName}/teams/${teamName.toLocaleLowerCase().replace(/ /g, '-')}`)
+      .reply(204)
+
+    return new OctokitApiMock(mock)
+  }
+
+  public orgRemoveTeamMember (teamSlug: string, member: string): OctokitApiMock {
+    const mock = this.nock.delete(`/orgs/${IDENTIFIERS.organizationName}/teams/${teamSlug}/memberships/${member}`)
+      .reply(204)
+
+    return new OctokitApiMock(mock)
+  }
+
+  public orgAddTeamMember (teamSlug: string, member: string): OctokitApiMock {
+    const mock = this.nock.put(`/orgs/${IDENTIFIERS.organizationName}/teams/${teamSlug}/memberships/${member}`)
+      .reply(200, {
+        url: `https://api.github.com/teams/${teamSlug}/memberships/${member}`,
+        role: 'member',
+        state: 'pending'
+      })
+
+    return new OctokitApiMock(mock)
+  }
 }
