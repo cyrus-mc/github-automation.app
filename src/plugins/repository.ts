@@ -47,10 +47,10 @@ module.exports = class Repository {
       delete_branch_on_merge: this.config?.delete_branch_on_merge,
       allow_auto_merge: this.config?.allow_auto_merge,
       allow_update_branch: this.config?.allow_update_branch,
-      squash_merge_commit_title: this.config?.squash_merge_commit_title,
-      squash_merge_commit_message: this.config?.squash_merge_commit_message,
-      merge_commit_title: this.config?.merge_commit_title,
-      merge_commit_message: this.config?.merge_commit_message
+      squash_merge_commit_title: this.config?.squash_merge_commit_title as 'PR_TITLE' | 'COMMIT_OR_PR_TITLE' | undefined,
+      squash_merge_commit_message: this.config?.squash_merge_commit_message as 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK' | undefined,
+      merge_commit_title: this.config?.merge_commit_title as 'PR_TITLE' | 'MERGE_MESSAGE' | undefined,
+      merge_commit_message: this.config?.merge_commit_message as 'PR_TITLE' | 'PR_BODY' | 'BLANK' | undefined
     })
   }
 }

@@ -2,12 +2,14 @@ import nock from 'nock'
 import myProbotApp from '../src'
 import { Probot, ProbotOctokit } from 'probot'
 import type { RepositoryConfig } from '../src/types/repository'
+import type { TeamsConfig } from '../src/types/teams'
 import * as labelHandler from '../src/handlers/label'
 import * as utils from '../src/utils'
 // import * as repositorySettings from '../src/plugins/repository'
 
 import * as fs from 'fs'
 import * as path from 'path'
+import { mockGitHubApiRequests } from './utils/helpers'
 
 const privateKey = fs.readFileSync(
   path.join(__dirname, 'fixtures/mock-cert.pem'),
@@ -74,6 +76,56 @@ describe('My Probot app', () => {
 
     // await probot.receive(event)
     expect(spy).toHaveBeenCalledTimes(0)
+  })
+
+  test('receives repository push event (non-main branch)', async () => {
+    const event: any = {
+      name: 'repository',
+      payload: require('./fixtures/repository.push.json')
+    }
+    event.payload.ref = 'refs/heads/feature-branch'
+    /* trigger event */
+    await probot.receive(event)
+  })
+
+  test('receives repository push event (main branch)', async () => {
+    const event: any = {
+      name: 'repository',
+      payload: require('./fixtures/repository.push.json')
+    }
+
+    const config: TeamsConfig = {
+      teams: {
+        idp: ['github'],
+        github: {
+          team1: ['user', 'user2'],
+          team2: []
+        }
+      }
+    }
+
+    const githubTeams: string[] = ['github', 'team1', 'obselete']
+
+    const mock = mockGitHubApiRequests()
+      .orgListTeams(githubTeams)
+      .deleteTeam('obselete')
+      .createTeam('team2')
+      .orgListTeamMembers('team1', ['user', 'user3'])
+      .orgListTeamMembers('team2', [])
+      .orgAddTeamMember('team1', 'user2')
+      .orgRemoveTeamMember('team1', 'user3')
+      .toNock()
+
+    /* mock getRepoContent */
+    const spy = jest.spyOn(utils, 'getRepoContent')
+    spy.mockResolvedValue(Promise.resolve(config))
+
+    /* trigger event */
+    await probot.receive(event)
+
+    /* assertions */
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(mock.pendingMocks()).toHaveLength(0)
   })
 
   afterEach(() => {
