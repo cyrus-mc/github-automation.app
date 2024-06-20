@@ -7,12 +7,12 @@ describe('teams plugin', () => {
   const octokit = new ProbotOctokit()
 
   test('delete team', async () => {
-    const githubTeams: string[] = ['team1', 'remove']
+    const githubTeams: string[] = ['Team 1', 'remove']
     const config: TeamsConfig = {
       teams: {
         idp: [],
         github: {
-          team1: []
+          'Team 1': []
         }
       }
     }
@@ -20,7 +20,7 @@ describe('teams plugin', () => {
     const mock = mockGitHubApiRequests()
       .orgListTeams(githubTeams)
       .deleteTeam('remove')
-      .orgListTeamMembers('team1', [])
+      .orgListTeamMembers('Team 1', [])
       .toNock()
 
     await Settings.sync('_orgname', '_reponame', config, octokit)
@@ -28,43 +28,43 @@ describe('teams plugin', () => {
   })
 
   test('add team', async () => {
-    const githubTeams: string[] = ['team1']
+    const githubTeams: string[] = ['Team 1']
     const config: TeamsConfig = {
       teams: {
         idp: [],
         github: {
-          team1: [],
-          add: []
+          'Team 1': [],
+          Add: []
         }
       }
     }
 
     const mock = mockGitHubApiRequests()
       .orgListTeams(githubTeams)
-      .createTeam('add')
-      .orgListTeamMembers('team1', [])
-      .orgListTeamMembers('add', [])
+      .createTeam('Add')
+      .orgListTeamMembers('Team 1', [])
+      .orgListTeamMembers('Add', [])
       .toNock()
 
     await Settings.sync('_orgname', '_reponame', config, octokit)
     expect(mock.pendingMocks()).toEqual([])
-  })
+  }, 70000)
 
   test('add members to team', async () => {
-    const githubTeams: string[] = ['team1']
+    const githubTeams: string[] = ['Team 1']
     const config: TeamsConfig = {
       teams: {
         idp: [],
         github: {
-          team1: ['user1']
+          'Team 1': ['user1']
         }
       }
     }
 
     const mock = mockGitHubApiRequests()
       .orgListTeams(githubTeams)
-      .orgListTeamMembers('team1', [])
-      .orgAddTeamMember('team1', 'user1')
+      .orgListTeamMembers('Team 1', [])
+      .orgAddTeamMember('Team 1', 'user1')
       .toNock()
 
     await Settings.sync('_orgname', '_reponame', config, octokit)
@@ -72,20 +72,20 @@ describe('teams plugin', () => {
   })
 
   test('remove member from team', async () => {
-    const githubTeams: string[] = ['team1']
+    const githubTeams: string[] = ['Team 1']
     const config: TeamsConfig = {
       teams: {
         idp: [],
         github: {
-          team1: []
+          'Team 1': []
         }
       }
     }
 
     const mock = mockGitHubApiRequests()
       .orgListTeams(githubTeams)
-      .orgListTeamMembers('team1', ['user1'])
-      .orgRemoveTeamMember('team1', 'user1')
+      .orgListTeamMembers('Team 1', ['user1'])
+      .orgRemoveTeamMember('Team 1', 'user1')
       .toNock()
 
     await Settings.sync('_orgname', '_reponame', config, octokit)

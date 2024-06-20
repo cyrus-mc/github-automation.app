@@ -1,6 +1,8 @@
 // import yaml from 'js-yaml'
 import { type ProbotOctokit } from 'probot'
 import type { TeamsSettings } from '../types/teams'
+import type { ListTeamResponse, ListTeamMembersResponse } from '../types/github'
+import { teamSlug } from '../utils'
 
 /**
  * Create and manage GitHub Teams
@@ -26,14 +28,14 @@ module.exports = class Teams {
   // Sets team associations for `this.repo` based on topic=>team mappings present in `this.config`
   async sync (): Promise<void> {
     /* get list of defined teams (keys) from configuration */
-    const teams = Object.keys(this.config.github).map(function (team) { return team.replace(/ /g, '-').toLocaleLowerCase() })
+    const teams = Object.keys(this.config.github)
 
     /* get all organization teams */
     const { data: response } = await this.github.teams.list({
       org: this.owner
     })
     /* map teams to a list of team slugs */
-    const organizationTeams = response.map(function (team) { return team.slug })
+    const organizationTeams: string[] = response.map(function (team: ListTeamResponse) { return team.name })
 
     /* create required teams */
     const teamsToCreate = teams.filter(team => !organizationTeams.includes(team))
@@ -46,7 +48,7 @@ module.exports = class Teams {
     }
 
     /* delete required teams (ignoring IDP teams) */
-    const teamsToDelete = organizationTeams.filter(team => !teams.includes(team) && !this.config.idp.includes(team))
+    const teamsToDelete: string[] = organizationTeams.filter(team => !teams.includes(team) && !this.config.idp.includes(team))
     for (const team of teamsToDelete) {
       /* what do we do with failures? */
       await this.github.teams.deleteInOrg({
@@ -60,9 +62,9 @@ module.exports = class Teams {
     for (const team of teams) {
       const { data: response } = await this.github.teams.listMembersInOrg({
         org: this.owner,
-        team_slug: team
+        team_slug: teamSlug(team)
       })
-      const teamMembers = response.map(function (member) { return member.login })
+      const teamMembers: string[] = response.map(function (member: ListTeamMembersResponse) { return member.login })
 
       /* team members - defined in configuration = members to remove */
       const membersToRemove = teamMembers.filter(member => !this.config.github[team].includes(member))
@@ -70,7 +72,7 @@ module.exports = class Teams {
         /* what do we do with failures? */
         await this.github.teams.removeMembershipForUserInOrg({
           org: this.owner,
-          team_slug: team,
+          team_slug: teamSlug(team),
           username: member
         })
       }
@@ -81,7 +83,7 @@ module.exports = class Teams {
         /* what do we do with failures? */
         await this.github.teams.addOrUpdateMembershipForUserInOrg({
           org: this.owner,
-          team_slug: team,
+          team_slug: teamSlug(team),
           username: member,
           role: 'member'
         })

@@ -1,4 +1,4 @@
-import yaml from 'js-yaml'
+import yaml from 'yaml'
 import type { ProbotOctokit } from 'probot'
 
 /**
@@ -22,7 +22,18 @@ export async function getRepoContent (owner: string, repo: string, file: string,
   let content: Record<string, any> = {}
   if ('content' in fileContent.data) {
     const buff = Buffer.from(fileContent.data.content, 'base64') // encoding should be base64
-    content = yaml.load(buff.toString()) as Record<string, any>
+    content = yaml.parse(buff.toString()) as Record<string, any>
   }
   return content
+}
+
+/**
+ *  Convert GitHub team name to slug
+ *
+ * @param {string } team  - the name of the team
+ *
+ * @returns { string } - the slug of the team
+ */
+export function teamSlug (team: string): string {
+  return team.toLocaleLowerCase().replace(/ /g, '-')
 }
