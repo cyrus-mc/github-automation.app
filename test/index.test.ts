@@ -90,7 +90,7 @@ describe('My Probot app', () => {
 
   test('receives repository push event (main branch)', async () => {
     const event: any = {
-      name: 'repository',
+      name: 'push',
       payload: require('./fixtures/repository.push.json')
     }
 

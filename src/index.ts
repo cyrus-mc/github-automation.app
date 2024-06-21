@@ -2,7 +2,6 @@ import type { Context, Probot } from 'probot'
 import { label } from './handlers/label'
 import { getRepoContent } from './utils'
 import { Settings } from './settings'
-import type { PushEvent } from './types/push_event'
 
 export = (app: Probot) => {
   let controlRepository = '.github'
@@ -48,18 +47,22 @@ export = (app: Probot) => {
     await Settings.sync(context.payload.repository.owner.login, context.payload.repository.name, config, context.octokit)
   })
 
-  app.on('repository', async (context: any) => {
-    const payload = context.payload as PushEvent
+  app.on('push', async (context: Context<'push'>) => {
+    app.log.info({ event: context.name })
+
+    // const payload = context.payload as PushEvent
 
     /* only trigger on push to main */
-    if (payload.ref !== 'refs/heads/main') {
+    if (context.payload.ref !== 'refs/heads/main') {
+      app.log.info({ event: context.name, ref: context.payload.ref, message: 'ignoring non-main branch' })
       return
     }
     /* check if modified files includes the teams file */
-    const updateTeams = payload.commits.some((commit) => commit.modified.includes('teams.yaml'))
+    const updateTeams = context.payload.commits.some((commit) => commit.modified.includes('teams.yaml'))
 
     /* if push event modifies team file, sync teams */
     if (updateTeams) {
+      app.log.info({ event: context.name, ref: context.payload.ref, message: 'updating teams' })
       const config = await getRepoContent(context.payload.repository.owner.login,
         controlRepository,
         'teams.yaml', 'main', context.octokit)
