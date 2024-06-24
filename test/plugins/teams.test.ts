@@ -7,12 +7,13 @@ describe('teams plugin', () => {
   const octokit = new ProbotOctokit()
 
   test('delete team', async () => {
-    const githubTeams: string[] = ['Team 1', 'remove']
+    const githubTeams: string[] = ['Team 1', 'team 2', 'remove', 'donotremove']
     const config: TeamsConfig = {
       teams: {
-        idp: [],
+        idp: ['donotremove'],
         github: {
-          'Team 1': []
+          'Team 1': [],
+          'team 2': []
         }
       }
     }
@@ -21,6 +22,7 @@ describe('teams plugin', () => {
       .orgListTeams(githubTeams)
       .deleteTeam('remove')
       .orgListTeamMembers('Team 1', [])
+      .orgListTeamMembers('Team 2', [])
       .toNock()
 
     await Settings.sync('_orgname', '_reponame', config, octokit)
@@ -28,12 +30,13 @@ describe('teams plugin', () => {
   })
 
   test('add team', async () => {
-    const githubTeams: string[] = ['Team 1']
+    const githubTeams: string[] = ['Team 1', 'Team2']
     const config: TeamsConfig = {
       teams: {
         idp: [],
         github: {
           'Team 1': [],
+          team2: [],
           Add: []
         }
       }
@@ -43,6 +46,7 @@ describe('teams plugin', () => {
       .orgListTeams(githubTeams)
       .createTeam('Add')
       .orgListTeamMembers('Team 1', [])
+      .orgListTeamMembers('Team2', [])
       .orgListTeamMembers('Add', [])
       .toNock()
 

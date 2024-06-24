@@ -28,17 +28,18 @@ module.exports = class Teams {
   // Sets team associations for `this.repo` based on topic=>team mappings present in `this.config`
   async sync (): Promise<void> {
     /* get list of defined teams (keys) from configuration */
+    /* I have to keep this in normal case because I lookup values later, and it is used to create the team */
     const teams = Object.keys(this.config.github)
 
     /* get all organization teams */
     const { data: response } = await this.github.teams.list({
       org: this.owner
     })
-    /* map teams to a list of team slugs */
-    const organizationTeams: string[] = response.map(function (team: ListTeamResponse) { return team.name })
+    /* map teams to a list of team names (lower case) */
+    const organizationTeams: string[] = response.map(function (team: ListTeamResponse) { return team.name.toLocaleLowerCase() })
 
     /* create required teams */
-    const teamsToCreate = teams.filter(team => !organizationTeams.includes(team))
+    const teamsToCreate = teams.filter(team => !organizationTeams.includes(team.toLocaleLowerCase()))
     for (const team of teamsToCreate) {
       /* what do we do with failures? */
       await this.github.teams.create({
@@ -48,7 +49,7 @@ module.exports = class Teams {
     }
 
     /* delete required teams (ignoring IDP teams) */
-    const teamsToDelete: string[] = organizationTeams.filter(team => !teams.includes(team) && !this.config.idp.includes(team))
+    const teamsToDelete: string[] = organizationTeams.filter(team => !teams.some(x => x.toLocaleLowerCase() === team) && !this.config.idp.some(x => x.toLocaleLowerCase() === team))
     for (const team of teamsToDelete) {
       /* what do we do with failures? */
       await this.github.teams.deleteInOrg({

@@ -50,7 +50,13 @@ export = (app: Probot) => {
   app.on('push', async (context: Context<'push'>) => {
     app.log.info({ event: context.name })
 
-    // const payload = context.payload as PushEvent
+    let github = context.octokit
+
+    /* https://probot.github.io/docs/github-api/ - see Unauthenticated events */
+    if (context.payload.installation === undefined) {
+      app.log.info({ event: context.name, message: 'installation id is undefined, unauthenticated event' })
+      github = await app.auth(process.env.INSTALLATION_ID as unknown as number)
+    }
 
     /* only trigger on push to main */
     if (context.payload.ref !== 'refs/heads/main') {
@@ -65,9 +71,9 @@ export = (app: Probot) => {
       app.log.info({ event: context.name, ref: context.payload.ref, message: 'updating teams' })
       const config = await getRepoContent(context.payload.repository.owner.login,
         controlRepository,
-        'teams.yaml', 'main', context.octokit)
+        'teams.yaml', 'main', github)
 
-      await Settings.sync(context.payload.repository.owner.login, context.payload.repository.name, config, context.octokit)
+      await Settings.sync(context.payload.repository.owner.login, context.payload.repository.name, config, github)
     }
   })
 }
